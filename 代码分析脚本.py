@@ -235,7 +235,7 @@ def main():
         overall_output_file_path = write_analysis_to_md(overall_analysis, overall_output_file, is_overall=True)
         print(f"整体分析结果已输出到 {overall_output_file_path}")
 
-        print(f"分析成功，分析结果已输出到 {output_base_dir}")
+        print(f"分析成功，分析结果已输出到 {output_base_dir}") #增加文件路径
     else:
         print("流程已中断。")
 
