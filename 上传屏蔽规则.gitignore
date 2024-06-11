@@ -1,2 +1,24 @@
 # 忽略虚拟环境文件夹
 venv/
+
+# 忽略 IDE 配置文件
+*.iml
+.idea/
+*.xml
+!*.md
+
+# 忽略个人或开发环境特定的设置
+profiles_settings.xml
+misc.xml
+modules.xml
+vcs.xml
+
+
+# 忽略所有 `.pyc` 文件
+*.pyc
+
+# 忽略所有日志文件
+*.log
+
+# 忽略所有临时文件
+*.tmp
