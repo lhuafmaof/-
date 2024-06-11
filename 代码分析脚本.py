@@ -1,12 +1,17 @@
 import os
 import re
+import shutil
+import logging
 from openai import OpenAI
 from typing import Dict, Any
+from git import Repo
+
+# 设置日志记录
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 client = OpenAI(
     api_key=os.environ.get("OPENAI_API_KEY"),
 )
-
 
 class CodeFile:
     def __init__(self, file_path: str):
@@ -14,29 +19,37 @@ class CodeFile:
         self.code = self._read_file()
 
     def _read_file(self) -> str:
-        with open(self.file_path, 'r', encoding='utf-8') as file:
-            return file.read()
+        try:
+            with open(self.file_path, 'r', encoding='utf-8') as file:
+                return file.read()
+        except Exception as e:
+            logging.error(f"Error reading file {self.file_path}: {e}")
+            raise
 
     def analyze_with_openai(self) -> Dict[str, str]:
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"请分析以下代码并提供其文件构成和代码逻辑：\n\n{self.code}\n\n",
-                }
-            ],
-            max_tokens=4000,
-            temperature=0.5,
-        )
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": f"请分析以下代码并提供其文件构成和代码逻辑：\n\n{self.code}\n\n",
+                    }
+                ],
+                max_tokens=4000,
+                temperature=0.5,
+            )
 
-        # 获取生成的消息内容
-        message_content = response.choices[0].message.content
+            # 获取生成的消息内容
+            message_content = response.choices[0].message.content.strip()
 
-        return {
-            "structure": self._extract_structure(message_content),
-            "logic": self._extract_logic(message_content)
-        }
+            return {
+                "structure": self._extract_structure(message_content),
+                "logic": self._extract_logic(message_content)
+            }
+        except Exception as e:
+            logging.error(f"Error analyzing code with OpenAI: {e}")
+            raise
 
     def _extract_structure(self, analysis: str) -> str:
         parts = analysis.split('代码逻辑:')
@@ -46,22 +59,50 @@ class CodeFile:
         parts = analysis.split('代码逻辑:')
         return parts[1].strip() if len(parts) > 1 else "未能提取代码逻辑"
 
+def clone_github_repo(github_url: str, clone_dir: str) -> str:
+    try:
+        repo_name = github_url.split('/')[-1].replace('.git', '')
+        clone_path = os.path.join(clone_dir, repo_name)
+        if os.path.exists(clone_path):
+            shutil.rmtree(clone_path)
+        Repo.clone_from(github_url, clone_path)
+        return clone_path
+    except Exception as e:
+        logging.error(f"Error cloning GitHub repository: {e}")
+        raise
 
 def analyze_project(directory: str) -> Dict[str, Dict[str, str]]:
     project_analysis = {}
     for root, _, files in os.walk(directory):
         for file in files:
             file_path = os.path.join(root, file)
+            if not file.endswith(('.py', '.java', '.js', '.cpp', '.c', '.cs')):
+                continue  # 过滤非代码文件
             try:
                 code_file = CodeFile(file_path)
                 analysis = code_file.analyze_with_openai()
                 project_analysis[file_path] = analysis
                 return project_analysis  # 找到第一个文件并分析后立即返回
             except Exception as e:
-                print(f"Error analyzing file: {e}")
+                logging.error(f"Error analyzing file {file_path}: {e}")
                 return {"error": f"Error analyzing file: {e}"}
     return project_analysis
 
+def analyze_entire_project(directory: str) -> Dict[str, Dict[str, str]]:
+    project_analysis = {}
+    for root, _, files in os.walk(directory):
+        for file in files:
+            file_path = os.path.join(root, file)
+            if not file.endswith(('.py', '.java', '.js', '.cpp', '.c', '.cs')):
+                continue  # 过滤非代码文件
+            try:
+                code_file = CodeFile(file_path)
+                analysis = code_file.analyze_with_openai()
+                project_analysis[file_path] = analysis
+            except Exception as e:
+                logging.error(f"Error analyzing file {file_path}: {e}")
+                project_analysis[file_path] = {"error": f"Error analyzing file: {e}"}
+    return project_analysis
 
 def generate_output_filename(base_name: str, extension: str) -> str:
     if not os.path.exists(base_name + extension):
@@ -80,8 +121,7 @@ def generate_output_filename(base_name: str, extension: str) -> str:
             return new_name
         num += 1
 
-
-def write_analysis_to_md(analysis_result: Dict[str, Dict[str, str]], output_file: str):
+def write_analysis_to_md(analysis_result: Dict[str, Dict[str, str]], output_file: str) -> str:
     with open(output_file, 'w', encoding='utf-8') as md_file:
         md_file.write("# 项目分析报告\n\n")
         for file_path, analysis in analysis_result.items():
@@ -92,28 +132,66 @@ def write_analysis_to_md(analysis_result: Dict[str, Dict[str, str]], output_file
                 md_file.write(f"### 文件结构\n\n{analysis['structure']}\n\n")
                 md_file.write(f"### 代码逻辑\n\n{analysis['logic']}\n\n")
             md_file.write("\n---\n\n")
+    return os.path.abspath(output_file)
 
+def create_output_folders(base_dir: str, project_dir: str) -> str:
+    project_name = os.path.basename(project_dir.rstrip('/'))
+    output_base_dir = os.path.join(base_dir, project_name + "分析文件")
+    os.makedirs(output_base_dir, exist_ok=True)
+
+    for root, dirs, files in os.walk(project_dir):
+        for dir_name in dirs:
+            relative_path = os.path.relpath(os.path.join(root, dir_name), project_dir)
+            os.makedirs(os.path.join(output_base_dir, relative_path + "分析文件"), exist_ok=True)
+
+    return output_base_dir
 
 def main():
-    project_dir = input("请输入文件路径: ").strip()
+    # 交互式输入
+    path = input("请粘贴本地项目路径或GitHub项目URL: ").strip()
+    output_dir = input("请输入输出目录（默认为当前目录）: ").strip() or os.getcwd()
 
-    if not os.path.exists(project_dir):
-        print("输入的文件路径不存在，请检查后重试。")
+    if os.path.exists(path):
+        project_dir = path
+        print("项目读取成功")
+    elif path.startswith("https://github.com/"):
+        try:
+            project_dir = clone_github_repo(path, output_dir)
+            print("项目读取成功")
+        except Exception as e:
+            print("项目读取失败，请检查本地文件路径或项目URL后重试。")
+            return
+    else:
+        print("无效的输入，请输入本地项目路径或GitHub项目URL。")
         return
 
+    # 测试流程
     analysis_result = analyze_project(project_dir)
 
     if "error" in analysis_result:
         print(f"测试失败: {analysis_result['error']}")
         return
 
-    base_name = os.path.basename(project_dir.rstrip('/')) + "分析结果"
+    base_name = os.path.basename(project_dir.rstrip('/')) + "分析测试文档"
     output_file = generate_output_filename(base_name, ".md")
 
-    write_analysis_to_md(analysis_result, output_file)
-    print(f"测试成功，分析结果已输出到 {output_file}")
+    output_file_path = write_analysis_to_md(analysis_result, output_file)
+    print(f"测试成功，分析结果已输出到 {output_file_path}")
 
+    # 提示用户是否继续分析整个项目
+    continue_analysis = input("是否分析整个文件？请输入继续或取消: ").strip()
+    if continue_analysis.lower() == '继续':
+        output_base_dir = create_output_folders(output_dir, project_dir)
+        analysis_result = analyze_entire_project(project_dir)
+        for file_path, analysis in analysis_result.items():
+            relative_path = os.path.relpath(file_path, project_dir)
+            output_file = os.path.join(output_base_dir, relative_path + ".md")
+            os.makedirs(os.path.dirname(output_file), exist_ok=True)
+            output_file_path = write_analysis_to_md({file_path: analysis}, output_file)
+            print(f"分析结果已输出到 {output_file_path}")
+        print(f"分析成功，分析结果已输出到 {output_base_dir}")
+    else:
+        print("流程已中断。")
 
 if __name__ == '__main__':
     main()
-
