@@ -53,6 +53,7 @@
 可以命令行运行下面命令一键安装
 pip install -r requirements.txt
 ![image](https://github.com/lhuafmaof/code-analysis/assets/33141484/14c00c3b-2f6a-4679-a2ec-45d8624ac712)
+
 这个一定要提前做，不要直接跑脚本，不然会一直报缺这个、少那个。和炒菜前先把调料、配菜先准备好一个道理。
 
 ## 3、配置openai api
