@@ -9,15 +9,15 @@
 
 # 本项目实现的功能：
 ## 1、整体分析
-+ First item  让人快速知道这个项目是干什么
-+ Second item  用什么语言写的
-+ Third item   使用了哪些框架
-+ Fourth item  有哪些文件，都是干什么的，哪些是代码，哪些是配置文件等等。
++ 让人快速知道这个项目是干什么
++ 用什么语言写的
++ 使用了哪些框架
++ 有哪些文件，都是干什么的，哪些是代码，哪些是配置文件等等。
 
 ## 2、具体文件分析
-+ First item   当前文件路径（方便找文件）
-+ Second item  当前代码主要结构
-+ Third item   当前代码主要逻辑
++ 当前文件路径（方便找文件）
++ 当前代码主要结构（主要是包、类、方法的使用情况）
++ 当前代码主要逻辑（主要是由几个函数，大致是什么关系）
 
 # 本项目依赖
 也可以查看requeirement文件。
@@ -40,4 +40,29 @@ sniffio==1.3.1
 tqdm==4.66.4
 typing_extensions==4.12.2
 
-# 使用教程 （开发1年以上的麻烦跳过，免得侮辱你）
+# 使用教程 （开发1年以上的麻烦跳过，怕侮辱你）
+## 1、下载脚本到本地解压
+![image](https://github.com/lhuafmaof/code-analysis/assets/33141484/394a3d85-d500-4ee9-907c-c125b525bb92)
+
+### 本地创建项目，把文件放到项目下。
+![image](https://github.com/lhuafmaof/code-analysis/assets/33141484/1f81be01-7b3a-4354-bc41-9c3776c7839a)
+项目类型选择python。
+
+## 2、安装相关依赖
+可以命令行运行下面命令一键安装
+pip install -r requirements.txt
+![image](https://github.com/lhuafmaof/code-analysis/assets/33141484/14c00c3b-2f6a-4679-a2ec-45d8624ac712)
+这个一定要提前做，不要直接跑脚本，不然会一直报缺这个、少那个。和炒菜前先把调料、配菜先准备好一个道理。
+
+## 3、配置openai api
+！！！ 不要改代码，图简单直接把key放代码里，不安全。容易被其他人白嫖你在openai充的钱。
+### 方法1、本地电脑配置环境变量（推荐）
++ 右键点击“此电脑”或“我的电脑”，选择“属性”。
++ 选择“高级系统设置”。
++ 点击“环境变量”按钮。
++ 在“系统变量”或“用户变量”部分，点击“新建”或“编辑”按钮来添加或修改环境变量。
+
+### 方法2、本地虚拟环境配置
+![image](https://github.com/lhuafmaof/code-analysis/assets/33141484/eb7209c8-8202-4806-94b4-be2c223a018a)
+![image](https://github.com/lhuafmaof/code-analysis/assets/33141484/077889df-28f1-471d-b70f-9a0ebd02171f)
+
