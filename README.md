@@ -46,6 +46,7 @@ typing_extensions==4.12.2
 
 ### 本地创建项目，把文件放到项目下。
 ![image](https://github.com/lhuafmaof/code-analysis/assets/33141484/1f81be01-7b3a-4354-bc41-9c3776c7839a)
+
 项目类型选择python。
 
 ## 2、安装相关依赖
