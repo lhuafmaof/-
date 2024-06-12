@@ -13,11 +13,15 @@
 + 用什么语言写的
 + 使用了哪些框架
 + 有哪些文件，都是干什么的，哪些是代码，哪些是配置文件等等。
+![image](https://github.com/lhuafmaof/code-analysis/assets/33141484/2e9cf350-f796-4412-a20f-0851bae61c36)
+
 
 ## 2、具体文件分析
 + 当前文件路径（方便找文件）
 + 当前代码主要结构（主要是包、类、方法的使用情况）
 + 当前代码主要逻辑（主要是由几个函数，大致是什么关系）
+![image](https://github.com/lhuafmaof/code-analysis/assets/33141484/fd37f1cd-4366-42e2-97d9-789a951c0243)
+
 
 # 本项目依赖
 也可以查看requeirement文件。
