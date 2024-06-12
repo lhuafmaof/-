@@ -21,24 +21,24 @@
 
 # 本项目依赖
 也可以查看requeirement文件。
-annotated-types==0.7.0
-anyio==4.4.0
-certifi==2024.6.2
-colorama==0.4.6
-distro==1.9.0
-gitdb==4.0.11
-GitPython==3.1.43
-h11==0.14.0
-httpcore==1.0.5
-httpx==0.27.0
-idna==3.7
-openai==1.33.0
-pydantic==2.7.3
-pydantic_core==2.18.4
-smmap==5.0.1
-sniffio==1.3.1
-tqdm==4.66.4
-typing_extensions==4.12.2
++ annotated-types==0.7.0
++ anyio==4.4.0
++ certifi==2024.6.2
++ colorama==0.4.6
++ distro==1.9.0
++ gitdb==4.0.11
++ GitPython==3.1.43
++ h11==0.14.0
++ httpcore==1.0.5
++ httpx==0.27.0
++ idna==3.7
++ openai==1.33.0
++ pydantic==2.7.3
++ pydantic_core==2.18.4
++ smmap==5.0.1
++ sniffio==1.3.1
++ tqdm==4.66.4
++ typing_extensions==4.12.2
 
 # 使用教程 （开发1年以上的麻烦跳过，怕侮辱你）
 ## 1、下载脚本到本地解压
